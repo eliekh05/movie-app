@@ -3,6 +3,8 @@ import Search from "./components/Search";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 import MovieCard from "./components/MovieCard";
+import { useDebounce } from "react-use";
+import { updateSearchCount } from "./appwrite";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -19,6 +21,10 @@ const API_OPTIONS = {
 interface Movie {
   id: number;
   title: string;
+  vote_average: number;
+  poster_path: string;
+  release_date: string;
+  original_language: string;
 }
 
 const App = () => {
@@ -26,6 +32,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [movieList, setMovieList] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
+
+  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
+
   const fetchMovies = async (query: string = "") => {
     setIsLoading(true);
     try {
@@ -45,8 +55,7 @@ const App = () => {
       }
 
       setMovieList(data.results || []);
-
-      console.log(data);
+      updateSearchCount();
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
       setErrorMessage("Error fetching movies. Please try again later.");
@@ -58,8 +67,8 @@ const App = () => {
   useEffect(() => {
     setIsLoading(true);
     setErrorMessage("");
-    fetchMovies(searchTerm);
-  }, [searchTerm]);
+    fetchMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
   return (
     <ErrorBoundary>

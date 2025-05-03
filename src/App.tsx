@@ -4,7 +4,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
-import { updateSearchCount } from "./appwrite";
+import { getTrendingMovies, updateSearchCount } from "./appwrite";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -25,6 +25,8 @@ interface Movie {
   poster_path: string;
   release_date: string;
   original_language: string;
+  poster_url: string;
+  $id: number;
 }
 
 const App = () => {
@@ -33,6 +35,10 @@ const App = () => {
   const [movieList, setMovieList] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
+  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
+  const [isLoadingTrending, setIsLoadingTrending] = useState<boolean>(false);
+  const [trendingErrorMessage, setTrendingErrorMessage] =
+    useState<boolean>(false);
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
 
@@ -66,11 +72,44 @@ const App = () => {
     }
   };
 
+  const loadTrendingMovies = async () => {
+    setIsLoadingTrending(true);
+    try {
+      const movies = await getTrendingMovies();
+      if (!movies) {
+        setTrendingErrorMessage(true);
+      } else {
+        console.log("Trending Movies Data:", movies);
+        const transformedMovies = movies.map((doc) => ({
+          id: doc.movie_id,
+          title: doc.search_term,
+          vote_average: 0, // Placeholder value
+          poster_path: "", // Not used, using poster_url instead
+          release_date: "", // Placeholder value
+          original_language: "", // Placeholder value
+          poster_url: doc.poster_url,
+          $id: Number(doc.$id),
+        }));
+        console.log("Transformed Movies:", transformedMovies);
+        setTrendingMovies([...transformedMovies]);
+      }
+      setIsLoadingTrending(false);
+    } catch (error) {
+      console.error(`Error fetching trending movies: ${error}`);
+      setTrendingErrorMessage(true);
+      setIsLoadingTrending(false);
+    }
+  };
+
   useEffect(() => {
     setIsLoading(true);
     setErrorMessage("");
     fetchMovies(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    loadTrendingMovies();
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -86,6 +125,32 @@ const App = () => {
             </h1>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           </header>
+
+          {isLoadingTrending ? (
+            <Loader2 className="text-purple-400 my-2" />
+          ) : trendingErrorMessage ? (
+            <p className="text-red-500 font-semibold">
+              Error fetching trending movies. Please try again later.
+            </p>
+          ) : (
+            trendingMovies.length > 0 && (
+              <section className="trending">
+                <h2>Trending Movies</h2>
+
+                <ul>
+                  {trendingMovies.map((movie, index) => {
+                    console.log("Rendering Movie:", movie);
+                    return (
+                      <li key={movie.$id}>
+                        <p>{index + 1}</p>
+                        <img src={movie.poster_url} alt={movie.title} />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            )
+          )}
 
           <section className="all-movies">
             <h2>All Movies</h2>

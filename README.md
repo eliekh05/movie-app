@@ -1,54 +1,74 @@
-# React + TypeScript + Vite
+# Movie App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
 
-Currently, two official plugins are available:
+This is a movie application built with React, TypeScript, and other modern web technologies. It allows users to search for movies and view trending movies.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Technologies Used
 
-## Expanding the ESLint configuration
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Appwrite
+- lucide-react
+- react-use
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Installation
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1.  Clone the repository:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+    ```bash
+    git clone <repository_url>
+    ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2.  Navigate to the project directory:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+    ```bash
+    cd movie-app
+    ```
+
+3.  Install the dependencies:
+
+    ```bash
+    npm install
+    ```
+
+## Usage
+
+1.  Create a `.env.local` file in the project root and add the following environment variables:
+
+    ```
+    VITE_TMDB_API_KEY=<your_tmdb_api_key>
+    VITE_APPWRITE_PROJECT_ID=<your_appwrite_project_id>
+    VITE_APPWRITE_DATABASE_ID=<your_appwrite_database_id>
+    VITE_APPWRITE_COLLECTION_ID=<your_appwrite_collection_id>
+    ```
+
+    Replace the placeholders with your actual API keys and Appwrite credentials.
+
+2.  Run the development server:
+
+    ```bash
+    npm run dev
+    ```
+
+    This will start the application in development mode. Open your browser and navigate to the address provided by Vite (usually `http://localhost:3000`).
+
+## Scripts
+
+The following scripts are defined in the `package.json` file:
+
+- `dev`: Starts the development server using Vite.
+- `build`: Builds the production-ready application using TypeScript and Vite.
+- `lint`: Runs ESLint to check for code quality issues.
+- `preview`: Starts a local server to preview the production build.
+
+## Environment Variables
+
+The following environment variables are used in the project:
+
+- `VITE_TMDB_API_KEY`: The API key for the The Movie Database (TMDB) API.
+- `VITE_APPWRITE_PROJECT_ID`: The ID of your Appwrite project.
+- `VITE_APPWRITE_DATABASE_ID`: The ID of your Appwrite database.
+- `VITE_APPWRITE_COLLECTION_ID`: The ID of your Appwrite collection.
